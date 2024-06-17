@@ -1,18 +1,56 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.24;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract NFTWallet is ERC721, Ownable {
-    constructor() ERC721("NFTWallet", "NWT") Ownable(msg.sender) {}
+contract NFTWallet is ERC721, ERC721URIStorage, Ownable {
+    uint256 public _tokenId;
+    string private _baseTokenURI;
 
-    function safeMint(address to, uint256 tokenId) public onlyOwner {
-        _safeMint(to, tokenId);
+    constructor(string memory baseURI)
+        ERC721("BaseInu", "BIT")
+        Ownable(msg.sender)
+    {
+        _baseTokenURI = baseURI;
     }
 
-    function _baseURI() internal pure override returns (string memory) {
-        return
-            "https://ipfs.io/ipfs/QmXXzRSwSPs4DHLS7RDPRyG1GinjGVFv2fS5TdX3fW33FX/";
+
+    function safeMint(address to, string memory uri) public onlyOwner {
+        uint256 newTokenId = _tokenId++;
+        _safeMint(to, newTokenId);
+        _setTokenURI(newTokenId, uri);
+    }
+
+    function nextId() external view returns(uint256) {
+        return _tokenId;
+    }
+
+    function _baseURI() internal view override returns (string memory) {
+        return _baseTokenURI;
+    }
+
+    function setBaseURI(string memory baseURI) public onlyOwner {
+        _baseTokenURI = baseURI;
+    }
+
+    // The following functions are overrides required by Solidity.
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 }
