@@ -3,15 +3,38 @@ require("dotenv").config();
 
 
 module.exports = {
-  solidity: "0.8.20",
+  solidity: {
+    version: "0.8.20",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200
+      },
+      viaIR: true,
+    }
+  },
+  sourcify: {
+    enabled: true
+  },
+  defaultNetwork: "hardhat",
   networks: {
     hardhat: {
-      chainId: 11155111,
+      chainId: 1337,
     },
-      sepolia: {
-        url: `${process.env.ALCHEMY_SEPOLIA_URL}`,
-        accounts: [`0x${process.env.METAMASK_PRIVATE_KEY}`],
-      }, 
+    base: {
+      url: `${process.env.ALCHEMY_BASE_URL}`,
+      chainId: 8453,
+      accounts: [`0x${process.env.METAMASK_PRIVATE_KEY}`],
+    }, 
+    sepolia: {
+      url: `${process.env.ALCHEMY_SEPOLIA_URL}`,
+      chainId: 84532,
+      accounts: [`0x${process.env.METAMASK_PRIVATE_KEY}`],
+    }, 
   }, 
-  defaultNetwork: "hardhat",
+  etherscan: {
+    apiKey: {
+      baseSepolia: process.env.SEPOLIA_API_KEY,
+    },
+  },
 };
